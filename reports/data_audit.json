@@ -1,0 +1,146 @@
+{
+  "rows": 1000,
+  "correlations": {
+    "gate_count_end_of_hour": 0.9989222261526378
+  },
+  "unit_comparisons": [
+    {
+      "column": "hour",
+      "group": "Blue Line",
+      "median_ratio": 1.0
+    },
+    {
+      "column": "hour",
+      "group": "Red Line",
+      "median_ratio": 1.0
+    },
+    {
+      "column": "hour",
+      "group": "Yellow Line",
+      "median_ratio": 1.0
+    },
+    {
+      "column": "nearby_offices",
+      "group": "Blue Line",
+      "median_ratio": 1.0
+    },
+    {
+      "column": "nearby_offices",
+      "group": "Red Line",
+      "median_ratio": 0.8181818181818182
+    },
+    {
+      "column": "nearby_offices",
+      "group": "Yellow Line",
+      "median_ratio": 0.9473684210526315
+    },
+    {
+      "column": "temp_c",
+      "group": "Blue Line",
+      "median_ratio": 1.018181818181818
+    },
+    {
+      "column": "temp_c",
+      "group": "Red Line",
+      "median_ratio": 0.9253731343283582
+    },
+    {
+      "column": "temp_c",
+      "group": "Yellow Line",
+      "median_ratio": 1.0288461538461537
+    },
+    {
+      "column": "rain_mm",
+      "group": "Blue Line",
+      "median_ratio": 0.5744680851063829
+    },
+    {
+      "column": "rain_mm",
+      "group": "Red Line",
+      "median_ratio": 0.4214876033057851
+    },
+    {
+      "column": "rain_mm",
+      "group": "Yellow Line",
+      "median_ratio": 0.5188356164383561
+    },
+    {
+      "column": "feeder_buses",
+      "group": "Blue Line",
+      "median_ratio": 0.8095238095238095
+    },
+    {
+      "column": "feeder_buses",
+      "group": "Red Line",
+      "median_ratio": 0.8421052631578947
+    },
+    {
+      "column": "feeder_buses",
+      "group": "Yellow Line",
+      "median_ratio": 0.7727272727272727
+    },
+    {
+      "column": "ticket_price_rs",
+      "group": "Blue Line",
+      "median_ratio": 0.8717948717948718
+    },
+    {
+      "column": "ticket_price_rs",
+      "group": "Red Line",
+      "median_ratio": 102.77777777777777
+    },
+    {
+      "column": "ticket_price_rs",
+      "group": "Yellow Line",
+      "median_ratio": 1.0144927536231885
+    }
+  ],
+  "duplicate_count": 0,
+  "stuck_runs": [
+    {
+      "column": "feeder_buses",
+      "start_date": "2026-03-29",
+      "end_date": "2026-04-19",
+      "value": 13.0,
+      "days": 22
+    }
+  ],
+  "target_typo_count": 0,
+  "largest_target_gap_ratio": 1.1575898030127463,
+  "category_counts": {
+    "day_type": {
+      "raw": {
+        "weekend": 496,
+        "holiday": 304,
+        "weekday": 200
+      },
+      "clean": {
+        "weekend": 496,
+        "holiday": 304,
+        "weekday": 200
+      }
+    },
+    "line": {
+      "raw": {
+        "Yellow Line": 448,
+        "Red Line": 313,
+        "Blue Line": 239
+      },
+      "clean": {
+        "Yellow Line": 448,
+        "Red Line": 313,
+        "Blue Line": 239
+      }
+    }
+  },
+  "original_train_sha256": "8674dc956f0becd5afb5c8d7fa09f3ffcdce6a57824df9d8196dd995747a9580",
+  "cleaned_rows": 1000,
+  "cleaned_missing_counts": {
+    "hour": 0,
+    "nearby_offices": 69,
+    "temp_c": 0,
+    "rain_mm": 0,
+    "feeder_buses": 123,
+    "ticket_price_rs": 0
+  }
+}
