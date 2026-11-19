@@ -1,0 +1,29 @@
+paths:
+  train: data/raw/train.csv
+  later: data/raw/later.csv
+  holdout: data/raw/holdout_features.csv
+  findings_template: findings.yaml
+  findings: reports/findings.yaml
+  evidence: reports/data_audit.json
+  model: models/model.joblib
+  predictions: predictions/holdout_predictions.csv
+features:
+  numeric: [hour, nearby_offices, temp_c, rain_mm, feeder_buses, ticket_price_rs]
+  categorical: [day_type, line]
+target: entries_per_hour
+group_column: line
+training:
+  random_state: 42
+  validation_fraction: 0.20
+  candidates:
+    - {kind: ridge, alpha: 1.0}
+    - {kind: ridge, alpha: 20.0}
+    - {kind: hist_gradient_boosting, max_iter: 250, max_leaf_nodes: 15, l2_regularization: 10.0}
+tracking:
+  uri: sqlite:///mlflow.db
+  experiment_name: G031_MP135
+  registered_model_name: mp135-crowd
+monitoring:
+  psi_bins: 10
+  later_training_fraction: 0.70
+  minimum_improvement: 0.15

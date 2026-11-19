@@ -1,0 +1,53 @@
+{
+  "trials": [
+    {
+      "settings": {
+        "kind": "ridge",
+        "alpha": 1.0
+      },
+      "mae": 157.38943691507959,
+      "run_id": "3b1cab7d789746c3ba89a85fbf929030"
+    },
+    {
+      "settings": {
+        "kind": "ridge",
+        "alpha": 20.0
+      },
+      "mae": 156.2303586542096,
+      "run_id": "d2ef804be076407cac11b389aa26ed4f"
+    },
+    {
+      "settings": {
+        "kind": "hist_gradient_boosting",
+        "max_iter": 250,
+        "max_leaf_nodes": 15,
+        "l2_regularization": 10.0
+      },
+      "mae": 190.72492333849885,
+      "run_id": "4b461dcbccea4938845d9fc84062e688"
+    }
+  ],
+  "psi_all_numeric_columns": {
+    "hour": 0.04197528181949424,
+    "nearby_offices": 0.0373290674890466,
+    "temp_c": 0.026676855828632877,
+    "rain_mm": 3.622563406736032,
+    "feeder_buses": 0.02598071129399046,
+    "ticket_price_rs": 0.04766760203507331,
+    "entries_per_hour": 1.2122905237386017
+  },
+  "later_training_rows": 210,
+  "later_check_rows": 90,
+  "later_training_date_range": [
+    "2026-07-01",
+    "2026-08-14"
+  ],
+  "later_check_date_range": [
+    "2026-08-14",
+    "2026-08-31"
+  ],
+  "relative_mae_improvement": 0.17414459042745392,
+  "holdout_rows": 250,
+  "champion_version": 2,
+  "serving_model_sha256": "1a165531253d34e8400d3a3db281780824fc03c034b1a7891f9df5307e648da1"
+}
