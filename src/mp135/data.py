@@ -157,7 +157,17 @@ def clean_training(train, issues, later):
         cleaned.loc[cleaned[issue["column"]] == issue["value"], issue["column"]] = np.nan
     issue = issues["stuck_sensor"]
     if issue["present"]:
-        mask = cleaned["date"].between(issue["start_date"], issue["end_date"])
+        try:
+            dates = pd.to_datetime(cleaned["date"], format="%Y-%m-%d", errors="raise")
+            start = pd.to_datetime(issue["start_date"], format="%Y-%m-%d", errors="raise")
+            end = pd.to_datetime(issue["end_date"], format="%Y-%m-%d", errors="raise")
+        except (TypeError, ValueError) as error:
+            raise ValueError("Stuck-sensor dates must be valid dates") from error
+        if dates.isna().any() or pd.isna(start) or pd.isna(end):
+            raise ValueError("Stuck-sensor dates must not be missing")
+        if start > end:
+            raise ValueError("Stuck-sensor start date must not be after end date")
+        mask = dates.between(start, end)
         cleaned.loc[mask, issue["column"]] = np.nan
     if issues["target_typos"]["present"]:
         mask = target_typo_mask(cleaned["entries_per_hour"])

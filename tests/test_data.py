@@ -1,7 +1,56 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from mp135.data import audit_data, clean_training, find_stuck_runs, target_typo_mask
+
+
+@pytest.fixture
+def sensor_issues(example_rows, config):
+    holdout = example_rows.drop(columns=["entries_per_hour", "gate_count_end_of_hour"])
+    issues, _ = audit_data(example_rows, example_rows, holdout, config)
+    issues["stuck_sensor"] = {
+        "present": True,
+        "column": "feeder_buses",
+        "start_date": "2026-03-29",
+        "end_date": "2026-04-19",
+    }
+    return issues
+
+
+def test_sensor_cleaning_includes_boundaries_and_preserves_input(example_rows, sensor_issues):
+    data = example_rows.iloc[:4].copy()
+    data["date"] = ["2026-03-28", "2026-03-29", "2026-04-19", "2026-04-20"]
+    data["feeder_buses"] = 13
+    original = data.copy(deep=True)
+
+    cleaned = clean_training(data, sensor_issues, example_rows)
+
+    assert cleaned["feeder_buses"].isna().tolist() == [False, True, True, False]
+    assert cleaned.loc[[0, 3], "feeder_buses"].tolist() == [13, 13]
+    pd.testing.assert_series_equal(cleaned["date"], original["date"])
+    pd.testing.assert_frame_equal(data, original)
+
+
+def test_sensor_cleaning_rejects_reversed_interval(example_rows, sensor_issues):
+    sensor_issues["stuck_sensor"].update(start_date="2026-04-19", end_date="2026-03-29")
+    with pytest.raises(ValueError, match="start date.*end date"):
+        clean_training(example_rows, sensor_issues, example_rows)
+
+
+@pytest.mark.parametrize("field,value", [
+    ("date", "not-a-date"), ("date", None),
+    ("start_date", "not-a-date"), ("end_date", "not-a-date"),
+    ("start_date", None), ("end_date", None),
+])
+def test_sensor_cleaning_rejects_invalid_or_missing_dates(example_rows, sensor_issues, field, value):
+    data = example_rows.copy()
+    if field == "date":
+        data.loc[0, "date"] = value
+    else:
+        sensor_issues["stuck_sensor"][field] = value
+    with pytest.raises(ValueError, match="dates must"):
+        clean_training(data, sensor_issues, example_rows)
 
 
 def test_audit_detects_units_missing_leak_and_duplicates(example_rows, config):
