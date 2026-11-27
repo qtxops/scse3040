@@ -1,0 +1,53 @@
+group_id: G031
+problem_id: MP135
+data_issues:
+  leaking_column:
+    present: true
+    column: gate_count_end_of_hour
+  unit_mixup:
+    present: true
+    column: ticket_price_rs
+    group_value: Red Line
+    factor: 100
+  sentinel_value:
+    present: true
+    column: nearby_offices
+    value: -1.0
+    count: 69
+  duplicate_rows:
+    present: false
+    count: null
+  stuck_sensor:
+    present: true
+    column: feeder_buses
+    start_date: '2026-03-29'
+    end_date: '2026-04-19'
+  target_typos:
+    present: false
+    count: null
+  spelling_variants:
+    present: false
+    column: null
+    true_levels: null
+tracking:
+  experiment_name: G031_MP135
+  best_run_id: 5b77f139a44f48fe8101af39a51bb4bd
+  registered_model_name: mp135-crowd
+  champion_version: 2
+monitoring:
+  psi:
+    hour: 0.04197528181949424
+    nearby_offices: 0.0373290674890466
+    temp_c: 0.026676855828632877
+    rain_mm: 3.622563406736032
+    feeder_buses: 0.02598071129399046
+    ticket_price_rs: 0.04766760203507331
+  most_drifted_feature: rain_mm
+  mae_by_group:
+    Blue Line: 569.7826507285158
+    Red Line: 301.66917137116025
+    Yellow Line: 303.45060504031716
+  worst_served_group: Blue Line
+  mae_v1_on_check: 380.4161850933281
+  mae_v2_on_check: 314.168764348276
+  decision: promote
