@@ -1,5 +1,7 @@
 """Training-reference PSI and the client's promotion decision."""
 
+from numbers import Integral
+
 import numpy as np
 import pandas as pd
 
@@ -10,10 +12,14 @@ def population_stability_index(reference, current, bins=10):
     Open tails count readings outside the training range. Replace zero
     proportions by 0.0001 to keep the logarithm finite (P13 convention).
     """
+    if isinstance(bins, bool) or not isinstance(bins, Integral) or bins < 2:
+        raise ValueError("PSI bins must be an integer of at least 2")
     reference = pd.Series(reference).dropna().to_numpy(dtype=float)
     current = pd.Series(current).dropna().to_numpy(dtype=float)
     if not len(reference) or not len(current):
         raise ValueError("PSI needs nonempty reference and current samples")
+    if not np.isfinite(reference).all() or not np.isfinite(current).all():
+        raise ValueError("PSI samples must contain only finite values")
     low, high = float(reference.min()), float(reference.max())
     if low == high:
         edges = np.array([-np.inf, low - 0.5, high + 0.5, np.inf])

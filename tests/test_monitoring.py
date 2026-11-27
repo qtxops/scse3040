@@ -12,6 +12,36 @@ def test_psi_identical_samples_and_shift_with_out_of_range_values():
     assert np.isfinite(population_stability_index([1, 1, np.nan], [1, 2, np.nan]))
 
 
+@pytest.mark.parametrize("bins", [0, 1, -1, 2.5, 2.0, True, False, "10", None])
+def test_psi_rejects_invalid_bin_counts(bins):
+    with pytest.raises(ValueError, match="integer of at least 2"):
+        population_stability_index([1, 2, 3], [1, 2, 3], bins=bins)
+
+
+@pytest.mark.parametrize("side", ["reference", "current"])
+@pytest.mark.parametrize("value", [np.inf, -np.inf])
+def test_psi_rejects_infinite_values_in_either_sample(side, value):
+    samples = {"reference": [1, 2, 3], "current": [1, 2, 3]}
+    samples[side] = [1, value, 3]
+    with pytest.raises(ValueError, match="finite values"):
+        population_stability_index(**samples)
+
+
+@pytest.mark.parametrize("side", ["reference", "current"])
+@pytest.mark.parametrize("sample", [[], [np.nan, np.nan]])
+def test_psi_rejects_empty_samples_after_dropping_missing_values(side, sample):
+    samples = {"reference": [1, 2, 3], "current": [1, 2, 3]}
+    samples[side] = sample
+    with pytest.raises(ValueError, match="nonempty"):
+        population_stability_index(**samples)
+
+
+def test_psi_ignores_missing_values_and_accepts_numpy_integer_bins():
+    expected = population_stability_index([0, 1, 2], [1, 2, 3], bins=10)
+    actual = population_stability_index([0, np.nan, 1, 2], [1, 2, np.nan, 3], bins=np.int64(10))
+    assert actual == pytest.approx(expected)
+
+
 @pytest.mark.parametrize("v1,v2,expected", [
     (100, 85, "promote"), (100, 85.01, "keep"), (100, 70, "promote"),
     (100, 110, "keep"), (0, 0, "keep"),
