@@ -30,6 +30,16 @@ with `PYTHONPATH=src`. Tests configure this path automatically.
 Tests create synthetic data and inject a test model into FastAPI. They do
 not need the original training CSVs or a running MLflow server.
 
+To verify the committed predictions against the exported model, check the
+MLflow runs and champion alias, and validate the recorded promotion decision:
+
+```sh
+PYTHONPATH=src python scripts/check_artifacts.py
+```
+
+This check reads the database without changing it and needs only committed
+files. It does not need the raw training CSVs or local MLflow model artifacts.
+
 ## Data and cleaning
 
 Copy the three original CSVs from the assignment zip to `data/raw/`:
@@ -143,6 +153,8 @@ fields shown above. Pydantic rejects `rain_mm > 100` and
 fields, missing fields, invalid categories and nonfinite values are
 rejected. Each successful prediction produces a JSON log line on stdout
 containing its timestamp, prediction and latency, without request details.
+Nonfinite model outputs return HTTP 500 before negative predictions are
+clipped to zero.
 
 ## Docker, CI and Kubernetes
 
@@ -153,8 +165,16 @@ docker run --rm -p 8000:8000 mp135-api:1.0
 
 The Dockerfile uses `python:3.12-slim` and installs dependencies before
 copying code. GitHub Actions installs requirements and runs pytest on
-push and pull requests. Check the repository's Actions tab for the actual
-remote result.
+push and pull requests, checks the committed artifacts, and builds and
+starts the container in a separate job. The live smoke check covers health,
+real-model predictions and both client input rules. Run the same check
+against your running API with:
+
+```sh
+python scripts/smoke_api.py http://127.0.0.1:8000
+```
+
+Check the repository's Actions tab for the actual remote result.
 
 Kubernetes files define Deployment `mp135-api`, image `mp135-api:1.0`,
 three replicas, and Service `mp135-svc` on port 80 targeting 8000.

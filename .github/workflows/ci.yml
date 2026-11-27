@@ -15,3 +15,28 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: pytest -q
+      - name: Verify committed artifacts
+        env:
+          PYTHONPATH: src
+        run: python scripts/check_artifacts.py
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build API image
+        run: docker build --tag mp135-api:1.0 .
+      - name: Start API container
+        id: start_container
+        run: docker run --detach --name mp135-smoke --publish 127.0.0.1:8000:8000 mp135-api:1.0
+      - name: Check live API
+        run: python scripts/smoke_api.py
+      - name: Show container logs
+        if: ${{ always() && steps.start_container.outcome == 'success' }}
+        run: docker logs mp135-smoke
+      - name: Remove API container
+        if: ${{ always() && steps.start_container.outcome == 'success' }}
+        run: docker rm --force mp135-smoke
