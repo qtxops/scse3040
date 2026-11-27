@@ -10,12 +10,13 @@ from app.main import JsonFormatter, create_app, logger
 
 
 class StubModel:
-    def __init__(self):
+    def __init__(self, value=1234.5):
         self.calls = 0
+        self.value = value
 
     def predict(self, frame):
         self.calls += 1
-        return np.full(len(frame), 1234.5)
+        return np.full(len(frame), self.value)
 
 
 @pytest.fixture
@@ -31,6 +32,26 @@ def test_health_and_prediction(client, request_body):
     response = api.post("/predict", json=request_body)
     assert response.status_code == 200
     assert response.json() == {"prediction": 1234.5}
+    assert model.calls == 1
+
+
+@pytest.mark.parametrize("value", [np.nan, np.inf, -np.inf])
+def test_nonfinite_model_outputs_are_rejected(request_body, value):
+    model = StubModel(value)
+    with TestClient(create_app(model=model)) as api:
+        response = api.post("/predict", json=request_body)
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Model returned a nonfinite prediction"}
+    assert model.calls == 1
+
+
+@pytest.mark.parametrize("value,expected", [(-12.5, 0.0), (0.0, 0.0), (1234.5, 1234.5)])
+def test_finite_predictions_are_clipped_without_extra_model_calls(request_body, value, expected):
+    model = StubModel(value)
+    with TestClient(create_app(model=model)) as api:
+        response = api.post("/predict", json=request_body)
+    assert response.status_code == 200
+    assert response.json() == {"prediction": expected}
     assert model.calls == 1
 
 

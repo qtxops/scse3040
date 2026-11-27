@@ -14,7 +14,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from mp135.config import ROOT
-from mp135.modeling import predict
 
 
 class PredictionRequest(BaseModel):
@@ -71,9 +70,10 @@ def create_app(model=None, model_path=None):
     def prediction(request: PredictionRequest):
         started = time.perf_counter()
         frame = pd.DataFrame([request.model_dump()])
-        result = float(predict(application.state.model, frame)[0])
+        result = float(application.state.model.predict(frame)[0])
         if not math.isfinite(result):
             raise HTTPException(status_code=500, detail="Model returned a nonfinite prediction")
+        result = max(0.0, result)
         logger.info("prediction", extra={"event_data": {
             "prediction": result, "latency_ms": round((time.perf_counter() - started) * 1000, 3),
         }})
